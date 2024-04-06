@@ -1,5 +1,6 @@
 $white: white;
 $purple: purple;
+$purple-dark: rgb(61, 4, 61);
 
 html, body{
     background-color: wheat;
@@ -15,10 +16,18 @@ html, body{
     text-align: center;
 }
 
+h1{
+    color: $purple;
+    font-weight: bolder;
+    margin: 10px auto;
+    text-decoration: underline;
+}
+
 .form{
     display: block;
     width: 75%;
     margin: auto;
+    padding-top: 10px;
 
 
    label{
@@ -39,6 +48,13 @@ html, body{
         background-color: $purple;
         color: $white;
         margin: 20px auto;
+    }
+
+    .btn:hover{
+        background-color: $white;
+        color: $purple;
+        border: 1px solid $purple;
+        font-weight: bold;
     }
 }
 

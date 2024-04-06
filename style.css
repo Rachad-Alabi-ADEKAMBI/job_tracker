@@ -12,10 +12,18 @@ html, body {
   text-align: center;
 }
 
+h1 {
+  color: purple;
+  font-weight: bolder;
+  margin: 10px auto;
+  text-decoration: underline;
+}
+
 .form {
   display: block;
   width: 75%;
   margin: auto;
+  padding-top: 10px;
 }
 .form label {
   margin: 5px auto;
@@ -33,4 +41,10 @@ html, body {
   background-color: purple;
   color: white;
   margin: 20px auto;
+}
+.form .btn:hover {
+  background-color: white;
+  color: purple;
+  border: 1px solid purple;
+  font-weight: bold;
 }/*# sourceMappingURL=style.css.map */

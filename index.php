@@ -27,27 +27,27 @@
             <form @submit.prevent="submitForm" class="form">
                 <label>
                     Enterprise:
-                    <input type="text" v-model="form.enterprise" placeholder="Enterprise" required>
+                    <input type="text" v-model="form.enterprise" placeholder="" required>
                 </label>
 
                 <label>
                     Job Title:
-                    <input type="text" v-model="form.title" placeholder="Job Title" required>
+                    <input type="text" v-model="form.title" placeholder="" required>
                 </label>
 
                 <label>
                     Source:
-                    <input type="text" v-model="form.source" placeholder="Source" required>
+                    <input type="text" v-model="form.source" placeholder="" required>
                 </label>
 
                 <label>
                     Recruiter:
-                    <input type="text" v-model="form.recruiter" placeholder="Recruiter" required>
+                    <input type="text" v-model="form.recruiter" placeholder="" required>
                 </label>
 
                 <label>
                     Observations:
-                    <input type="text" v-model="form.note" placeholder="Observations">
+                    <input type="text" v-model="form.note" placeholder="">
                 </label>
 
                 <button type="submit" class="btn">Submit</button>
