@@ -1,0 +1,16 @@
+html, body {
+  background-color: wheat;
+}
+
+.form {
+  display: block;
+}
+.form input {
+  height: 40px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+.form .btn {
+  width: 200px;
+  height: 50px;
+}/*# sourceMappingURL=style.css.map */
