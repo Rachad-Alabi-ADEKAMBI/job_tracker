@@ -23,7 +23,7 @@
 <body>
     <div id="app">
         <main class="main">
-            <h1>Job Finder App</h1>
+            <h1>Job Tracker App</h1>
             <form @submit.prevent="submitForm" class="form">
                 <label>
                     Enterprise:
