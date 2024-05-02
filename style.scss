@@ -23,6 +23,16 @@ h1{
     text-decoration: underline;
 }
 
+.options{
+    margin: auto;
+    width: 150px;
+    form{
+        label{
+            margin-left: 15px;
+        }
+    }
+}
+
 .form{
     display: block;
     width: 75%;

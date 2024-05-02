@@ -24,7 +24,21 @@
     <div id="app">
         <main class="main">
             <h1>Job Tracker App</h1>
-            <form @submit.prevent="submitForm" class="form">
+            <div class="options">
+            <form>
+                <label for="option1">
+                <input type="radio" id="option1" name="options" value="option1" 
+                    @click='displayNew()'>
+                New 
+                </label>
+                <label for="option2 ml-5">
+                <input type="radio" id="option2" name="options" value="option2"
+                     @click='displayAll()'>
+                All
+                </label>
+            </form>
+            </div>
+            <form @submit.prevent="submitForm" class="form" v-if='showNew'>
                 <label>
                     Enterprise:
                     <input type="text" v-model="form.enterprise" placeholder="" required>
@@ -52,6 +66,24 @@
 
                 <button type="submit" class="btn">Submit</button>
             </form>
+
+            <div class="list" v-if='showList'>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Id</th>
+                        <th>Date</th>
+                        <th>Enterprise</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div>
 
@@ -59,6 +91,8 @@
     const app = Vue.createApp({
         data() {
             return {
+                showList: false,
+                showNew: false,
                 form: {
                     enterprise: '',
                     title: '',
@@ -69,6 +103,14 @@
             };
         },
         methods: {
+            displayNew(){
+                this.showNew = true,
+                this.showList = false
+            },
+            displayAll(){
+                this.showNew = false,
+                this.showList = true
+            },
             submitForm() {
                 axios.post('api.php', this.form)
                     .then(response => {
@@ -80,6 +122,9 @@
                         alert('not done')
                     });
             }
+        },
+        mounted() {
+            this.displayNew();
         }
     });
 
