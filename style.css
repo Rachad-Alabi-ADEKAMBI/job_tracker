@@ -55,4 +55,13 @@ h1 {
   color: purple;
   border: 1px solid purple;
   font-weight: bold;
+}
+
+.list table {
+  width: 80%;
+  margin: auto;
+  border: 1px solid black;
+}
+.list table thead {
+  background-color: purple;
 }/*# sourceMappingURL=style.css.map */

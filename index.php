@@ -25,20 +25,18 @@
         <main class="main">
             <h1>Job Tracker App</h1>
             <div class="options">
-            <form>
-                <label for="option1">
-                <input type="radio" id="option1" name="options" value="option1" 
-                    @click='displayNew()'>
-                New 
-                </label>
-                <label for="option2 ml-5">
-                <input type="radio" id="option2" name="options" value="option2"
-                     @click='displayAll()'>
-                All
-                </label>
-            </form>
+                <form>
+                    <label for="option1">
+                        <input type="radio" id="option1" name="options" value="option1" @click="displayNew">
+                        New
+                    </label>
+                    <label for="option2" class="ml-5">
+                        <input type="radio" id="option2" name="options" value="option2" @click="displayAll">
+                        All
+                    </label>
+                </form>
             </div>
-            <form @submit.prevent="submitForm" class="form" v-if='showNew'>
+            <form @submit.prevent="submitForm" class="form" v-if="showNew">
                 <label>
                     Enterprise:
                     <input type="text" v-model="form.enterprise" placeholder="" required>
@@ -67,21 +65,23 @@
                 <button type="submit" class="btn">Submit</button>
             </form>
 
-            <div class="list" v-if='showList'>
+            <div class="list" v-if="showList">
                 <table>
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Id</th>
-                        <th>Date</th>
-                        <th>Enterprise</th>
-                        <th>Status</th>
-                    </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>Enterprise</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td></td>
-                    </tr>
+                        <tr v-for="detail in datas" :key="detail.id">
+                            <td>{{ formatDate(detail.date) }}</td>
+                            <td>{{ detail.enterprise }}</td>
+                            <td>{{ detail.title }}</td>
+                            <td>{{ detail.status }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -89,47 +89,66 @@
     </div>
 
     <script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                showList: false,
-                showNew: false,
-                form: {
-                    enterprise: '',
-                    title: '',
-                    source: '',
-                    recruiter: '',
-                    note: ''
-                }
-            };
-        },
-        methods: {
-            displayNew(){
-                this.showNew = true,
-                this.showList = false
+        const app = Vue.createApp({
+            data() {
+                return {
+                    showList: false,
+                    showNew: false,
+                    form: {
+                        enterprise: '',
+                        title: '',
+                        source: '',
+                        recruiter: '',
+                        note: ''
+                    },
+                    datas: []
+                };
             },
-            displayAll(){
-                this.showNew = false,
-                this.showList = true
-            },
-            submitForm() {
-                axios.post('api.php', this.form)
-                    .then(response => {
-                        console.log(response.data);
-                        alert('done');
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        alert('not done')
-                    });
-            }
-        },
-        mounted() {
-            this.displayNew();
-        }
-    });
+            methods: {
+                displayNew() {
+                    this.showNew = true;
+                    this.showList = false;
+                },
+                displayAll() {
+                    this.showNew = false;
+                    this.showList = true;
+                    axios.get('api.php')
+                        .then(response => {
+                            console.log(response.data);
+                            this.datas = response.data;
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert('not done');
+                        });
+                },
+                submitForm() {
+                    axios.post('api.php', this.form)
+                        .then(response => {
+                            console.log(response.data);
+                            alert('done');
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert('not done');
+                        });
+                },
+                formatDate(date) {
+                    if (date) {
+                        const [datePart, timePart] = date.split(' ');
+                        const [year, month, day] = datePart.split('-');
+                        return `${day}-${month.slice(-2)}-${year.slice(-2)}`;
+                    }
 
-    app.mount('#app');
+                    return '';
+                },
+            },
+            mounted() {
+                this.displayNew();
+            }
+        });
+
+        app.mount('#app');
     </script>
 </body>
 

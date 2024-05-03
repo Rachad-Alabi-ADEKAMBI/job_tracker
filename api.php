@@ -49,8 +49,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         http_response_code(400); // Mauvaise demande
         echo json_encode(['error' => 'Missing required data']);
     }
+} else if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    // Récupérer toutes les données de la table jobs
+    $sql = "SELECT * FROM jobs";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $jobs = [];
+        while ($row = $result->fetch_assoc()) {
+            $jobs[] = $row;
+        }
+        header('Content-Type: application/json');
+        echo json_encode($jobs);
+    } else {
+        http_response_code(404); // Non trouvé
+        echo json_encode(['error' => 'No data found']);
+    }
 } else {
-    // Si la méthode de requête n'est pas POST, renvoyer une erreur
+    // Si la méthode de requête n'est ni POST ni GET, renvoyer une erreur
     http_response_code(405); // Méthode non autorisée
     echo json_encode(['error' => 'Method Not Allowed']);
 }
