@@ -130,7 +130,7 @@
                         })
                         .catch(error => {
                             console.error(error);
-                            alert('not done');
+                            alert('error, not done');
                         });
                 },
                 formatDate(date) {
