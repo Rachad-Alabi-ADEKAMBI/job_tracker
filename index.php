@@ -24,7 +24,7 @@
 <body>
     <div id="app">
         <main class="main">
-            <h1>Job Tracker App</h1>
+            <h1>Job Tracker</h1>
             <div class="options">
                 <form>
                     <label for="option1">
@@ -156,6 +156,8 @@
 
         app.mount('#app');
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    
 </body>
 
 </html>
