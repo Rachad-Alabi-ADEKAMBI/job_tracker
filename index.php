@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
 </head>
 
@@ -35,9 +36,10 @@
                         All
                     </label>
                 </form>
-            </div>
-            <form @submit.prevent="submitForm" class="form" v-if="showNew">
-                <label>
+            </div> <br>
+            <form @submit.prevent="submitForm" 
+                        class="form" v-if="showNew">
+                <label class="label">
                     Enterprise:
                     <input type="text" v-model="form.enterprise" placeholder="" required>
                 </label>
@@ -66,24 +68,28 @@
             </form>
 
             <div class="list" v-if="showList">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Enterprise</th>
-                            <th>Title</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="detail in datas" :key="detail.id">
-                            <td>{{ formatDate(detail.date) }}</td>
-                            <td>{{ detail.enterprise }}</td>
-                            <td>{{ detail.title }}</td>
-                            <td>{{ detail.status }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Enterprise</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="detail in datas" :key="detail.id">
+                                <th scope="row">{{ detail.id }}</th>
+                                <td>{{ formatDate(detail.date) }}</td>
+                                <td>{{ detail.enterprise }}</td>
+                                <td>{{ detail.title }}</td>
+                                <td>{{ detail.status }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>

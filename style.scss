@@ -5,10 +5,11 @@ $purple-dark: rgb(61, 4, 61);
 html, body{
     background-color: wheat;
     padding-top: 20px;
+    font-size: 1.1em;
 }
 
 .main{
-    width: 550px;
+    width: 80vw;
     margin: auto;
     border: 1px solid black;
     border-radius: 10px;
@@ -35,29 +36,32 @@ h1{
 
 .form{
     display: block;
-    width: 75%;
+    width: 90%;
     margin: auto;
-    padding-top: 10px;
+    display: inline;
 
-
-   label{
-    margin: 5px auto;
+   .label{
+    margin: 20px auto;
     text-align: left;
+    display: inline;
+    width: 45%;
 
     input{
         height: 40px;
-        font-weight: bold;
         padding-right: 10px;
+        border-radius: 5px;
+        margin: 5px;
     }
    }
 
     .btn{
-        width: 200px;
-        height: 50px;
+        width: 220px;
+        height: 45px;
         cursor: pointer;
         background-color: $purple;
         color: $white;
-        margin: 20px auto;
+        border: 5px solid $purple;
+        margin: 20px;
     }
 
     .btn:hover{
@@ -65,9 +69,11 @@ h1{
         color: $purple;
         border: 1px solid $purple;
         font-weight: bold;
+        font-size: larger;
     }
 }
 
+/*
 .list{
     table{
         width: 80%;
@@ -75,7 +81,22 @@ h1{
         border: 1px solid black;
 
         thead{
-            background-color: $purple;
+            background: $purple;
+            color: $white;
+
+            tr{
+                th{
+                    height: 40px;
+                }
+            }
+        }
+
+        tr{
+
+            td{
+                height: 35px;
+            }
         }
     }
 }
+*/
