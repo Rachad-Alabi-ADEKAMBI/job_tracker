@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 } else if ($_SERVER["REQUEST_METHOD"] == "GET") {
     // Récupérer toutes les données de la table jobs
-    $sql = "SELECT * FROM jobs";
+    $sql = "SELECT * FROM jobs ORDER BY id DESC";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

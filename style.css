@@ -63,30 +63,6 @@ h1 {
   font-size: larger;
 }
 
-/*
-.list{
-    table{
-        width: 80%;
-        margin: auto;
-        border: 1px solid black;
-
-        thead{
-            background: $purple;
-            color: $white;
-
-            tr{
-                th{
-                    height: 40px;
-                }
-            }
-        }
-
-        tr{
-
-            td{
-                height: 35px;
-            }
-        }
-    }
-}
-*//*# sourceMappingURL=style.css.map */
+.list .navigation {
+  margin: auto;
+}/*# sourceMappingURL=style.css.map */
