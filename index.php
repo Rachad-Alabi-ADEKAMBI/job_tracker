@@ -18,7 +18,8 @@
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
+    
+    <script src="https://kit.fontawesome.com/b14771b76e.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -27,16 +28,37 @@
             <h1>Job Tracker</h1>
             <div class="options">
                 <form>
-                    <label for="option1">
-                        <input type="radio" id="option1" name="options" value="option1" @click="displayNew">
+                    <label for="searchRadio">
+                        <input type="radio" id="searchRadio" name="options" @click="displaySearch()">
+                        Search
+                    </label>
+                    <label for="newRadio" class="ml-5">
+                        <input type="radio" id="newRadio" name="options" @click="displayNew()">
                         New
                     </label>
-                    <label for="option2" class="ml-5">
-                        <input type="radio" id="option2" name="options" value="option2" @click="displayAll">
+                    <label for="allRadio" class="ml-5">
+                        <input type="radio" id="allRadio" name="options" @click="displayAll()">
                         All
                     </label>
                 </form>
-            </div> <br>
+            </div>
+            <br>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 md-4 mx-auto">
+                        <div class="search" v-if="showSearch">
+                            <div class="input-group rounded mx-auto">
+                                <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" v-model="searchQuery" @input="search">
+                                <span class="input-group-text border-0" id="search-addon">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <form @submit.prevent="submitForm" 
                         class="form" v-if="showNew">
                 <label class="label">
@@ -66,6 +88,51 @@
 
                 <button type="submit" class="btn">Submit</button>
             </form>
+
+            <div class="container" v-if="showFiltered || showList">
+                <div class="row">
+                    <div class="col">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <!-- Table headers and body -->
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Enterprise</th>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="detail in paginatedData" :key="detail.id">
+                                        <th scope="row">{{ detail.id }}</th>
+                                        <td>{{ formatDate(detail.date) }}</td>
+                                        <td>{{ detail.enterprise }}</td>
+                                        <td>{{ detail.title }}</td>
+                                        <td>{{ detail.status }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Pagination controls -->
+                            <nav aria-label="Page navigation mx-auto">
+                                <ul class="pagination">
+                                    <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+                                        <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
+                                    </li>
+                                    <li class="page-item" v-for="page in totalPages" :key="page" :class="{ 'active': page === currentPage }">
+                                        <a class="page-link" href="#" @click.prevent="gotoPage(page)">{{ page }}</a>
+                                    </li>
+                                    <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
+                                        <a class="page-link" href="#" @click.prevent="nextPage">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="list" v-if="showList">
                 <div class="table-responsive">
@@ -115,6 +182,9 @@
                 return {
                     showList: false,
                     showNew: false,
+                    showSearch: false,
+                    showFiltered: false,
+                    searchQuery: '',
                     form: {
                         enterprise: '',
                         title: '',
@@ -129,22 +199,26 @@
             },
             computed: {
                 paginatedData() {
-                const startIndex = (this.currentPage - 1) * this.pageSize;
-                const endIndex = startIndex + this.pageSize;
-                return this.datas.slice(startIndex, endIndex);
+                    const startIndex = (this.currentPage - 1) * this.pageSize;
+                    const endIndex = startIndex + this.pageSize;
+                    return this.datas.slice(startIndex, endIndex);
                 },
                 totalPages() {
-                return Math.ceil(this.datas.length / this.pageSize);
+                    return Math.ceil(this.datas.length / this.pageSize);
                 },
             },
             methods: {
                 displayNew() {
                     this.showNew = true;
                     this.showList = false;
+                    this.showSearch = false;
+                    this.showFiltered = false;
                 },
                 displayAll() {
                     this.showNew = false;
                     this.showList = true;
+                    this.showSearch = false;
+                    this.showFiltered = false;
                     axios.get('api.php')
                         .then(response => {
                             console.log(response.data);
@@ -154,6 +228,12 @@
                             console.error(error);
                             alert('not done');
                         });
+                },
+                displaySearch() {
+                    this.showNew = false;
+                    this.showList = false;
+                    this.showSearch = true;
+                    this.showFiltered = true;
                 },
                 submitForm() {
                     axios.post('api.php', this.form)
@@ -172,21 +252,24 @@
                         const [year, month, day] = datePart.split('-');
                         return `${day}-${month.slice(-2)}-${year.slice(-2)}`;
                     }
-
                     return '';
                 },
                 prevPage() {
                     if (this.currentPage > 1) {
                         this.currentPage--;
                     }
-                    },
-                    nextPage() {
+                },
+                nextPage() {
                     if (this.currentPage < this.totalPages) {
                         this.currentPage++;
                     }
-                    },
-                    gotoPage(page) {
+                },
+                gotoPage(page) {
                     this.currentPage = page;
+                },
+                search() {
+                    this.datas = this.datas.filter(item => item.title.toLowerCase().includes(this.searchQuery.toLowerCase()));
+
                 },
             },
             mounted() {
@@ -196,8 +279,6 @@
 
         app.mount('#app');
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-    
 </body>
 
 </html>
