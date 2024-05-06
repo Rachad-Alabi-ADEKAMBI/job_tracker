@@ -80,7 +80,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="detail in datas" :key="detail.id">
+                            <tr v-for="detail in paginatedData" :key="detail.id">
                                 <th scope="row">{{ detail.id }}</th>
                                 <td>{{ formatDate(detail.date) }}</td>
                                 <td>{{ detail.enterprise }}</td>
@@ -89,6 +89,21 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Pagination controls -->
+                    <nav aria-label="Page navigation mx-auto">
+                        <ul class="pagination">
+                            <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+                            <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
+                            </li>
+                            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ 'active': page === currentPage }">
+                            <a class="page-link" href="#" @click.prevent="gotoPage(page)">{{ page }}</a>
+                            </li>
+                            <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
+                            <a class="page-link" href="#" @click.prevent="nextPage">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </main>
@@ -107,8 +122,20 @@
                         recruiter: '',
                         note: ''
                     },
-                    datas: []
+                    datas: [],
+                    currentPage: 1,
+                    pageSize: 10, // Number of items per page
                 };
+            },
+            computed: {
+                paginatedData() {
+                const startIndex = (this.currentPage - 1) * this.pageSize;
+                const endIndex = startIndex + this.pageSize;
+                return this.datas.slice(startIndex, endIndex);
+                },
+                totalPages() {
+                return Math.ceil(this.datas.length / this.pageSize);
+                },
             },
             methods: {
                 displayNew() {
@@ -147,6 +174,19 @@
                     }
 
                     return '';
+                },
+                prevPage() {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                    }
+                    },
+                    nextPage() {
+                    if (this.currentPage < this.totalPages) {
+                        this.currentPage++;
+                    }
+                    },
+                    gotoPage(page) {
+                    this.currentPage = page;
                 },
             },
             mounted() {
