@@ -82,7 +82,7 @@
                 </label>
 
                 <label>
-                    Observations:
+                    Noure//:
                     <input type="text" v-model="form.note" placeholder="">
                 </label>
 
