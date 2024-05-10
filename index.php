@@ -10,15 +10,12 @@
 
     <!-- CDN Vue.js -->
     <script src="https://unpkg.com/vue@3"></script>
-
     <!-- CDN Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    
     <script src="https://kit.fontawesome.com/b14771b76e.js" crossorigin="anonymous"></script>
 </head>
 
@@ -59,8 +56,7 @@
                 </div>
             </div>
 
-            <form @submit.prevent="submitForm" 
-                        class="form" v-if="showNew">
+            <form @submit.prevent="submitForm" class="form" v-if="showNew">
                 <label class="label">
                     Enterprise:
                     <input type="text" v-model="form.enterprise" placeholder="" required>
@@ -89,7 +85,7 @@
                 <button type="submit" class="btn">Submit</button>
             </form>
 
-            <div class="container" v-if="showFiltered || showList">
+            <div class="container" v-if="showFiltered">
                 <div class="row">
                     <div class="col">
                         <div class="table-responsive">
@@ -102,6 +98,7 @@
                                         <th scope="col">Enterprise</th>
                                         <th scope="col">Title</th>
                                         <th scope="col">Status</th>
+                                        <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -111,6 +108,17 @@
                                         <td>{{ detail.enterprise }}</td>
                                         <td>{{ detail.title }}</td>
                                         <td>{{ detail.status }}</td>
+                                        <td v-if="detail.status === 'pending'">
+                                            <button class="btn btn-success" @click="makeAccepted(detail.id)">
+                                                Yes
+                                            </button>
+                                            <button class="btn btn-danger" @click="makeRejected(detail.id)">
+                                                No
+                                            </button>
+                                        </td>
+                                        <td v-else>
+                                            Item Processed
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -153,6 +161,15 @@
                                 <td>{{ detail.enterprise }}</td>
                                 <td>{{ detail.title }}</td>
                                 <td>{{ detail.status }}</td>
+                                <td v-if='detail.status = "pending"'>
+                                   <button class="btn btn-success" @click='makeAccepted(detail.id)'>
+                                        Yes
+                                   </button>
+
+                                   <button class="btn btn-danger" @click='makeRejected(detail.id)'>
+                                        No
+                                   </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -271,9 +288,33 @@
                     this.datas = this.datas.filter(item => item.title.toLowerCase().includes(this.searchQuery.toLowerCase()));
 
                 },
+                makeAccepted(id) {
+                    axios.put('api.php', { id, status: 'accepted' })
+                        .then(response => {
+                            console.log(response.data);
+                            alert('Item status updated');
+                            this.displayAll(); // Refresh data after update
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert('Error updating item status');
+                        });
+                },
+                makeRejected(id) {
+                    axios.put('api.php', { id, status: 'rejected' })
+                        .then(response => {
+                            console.log(response.data);
+                            alert('Item status updated');
+                            this.displayAll(); // Refresh data after update
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert('Error updating item status');
+                        });
+                     },
             },
             mounted() {
-                this.displayNew();
+                this.displayAll();
             }
         });
 
