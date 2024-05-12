@@ -1,59 +1,93 @@
 <?php
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = ""; // Par défaut, il n'y a pas de mot de passe pour 'root' en local
-$database = "job_tracker";
-
-// Établir la connexion à la base de données
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Vérifier la connexion
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+session_start();
+//local
+$pdo = new PDO('mysql:dbname=job_tracker;host=localhost', 'root', '');
+function getConnexion()
+{
+    return new PDO(
+        'mysql:host=localhost; dbname=job_tracker; charset=UTF8',
+        'root',
+        ''
+    );
 }
 
-// Vérifier la méthode de requête HTTP
-$method = $_SERVER["REQUEST_METHOD"];
+function sendJSON($infos)
+{
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: application/json');
+    echo json_encode($infos, JSON_UNESCAPED_UNICODE);
+}
 
-switch ($method) {
-    case 'GET':
-        // Endpoint pour récupérer toutes les données de la table jobs
-        $sql = "SELECT * FROM jobs ORDER BY id DESC";
-        $result = $conn->query($sql);
+$error = ['error' => false];
+$action = '';
 
-        if ($result->num_rows > 0) {
-            $jobs = [];
-            while ($row = $result->fetch_assoc()) {
-                $jobs[] = $row;
-            }
-            header('Content-Type: application/json');
-            echo json_encode($jobs);
+if (isset($_GET['action'])) {
+    $action = $_GET['action'];
+}
+
+//controle des input
+function verifyInput($inputContent)
+{
+    $inputContent = htmlspecialchars($inputContent);
+
+    $inputContent = trim($inputContent);
+
+    return $inputContent;
+}
+
+function createJob() {
+    $pdo = getConnexion();
+    $errors = [];
+    if (!empty($_POST)) {
+           $msg = 'done';
+           return $msg;
         } else {
-            http_response_code(404); // Non trouvé
-            echo json_encode(['error' => 'No data found']);
+            $response = [
+                'success' => false,
+                'errors' => $errors
+            ];
         }
-        break;
-    case 'POST':
-        // Endpoint pour enregistrer les données du formulaire
-        $formData = json_decode(file_get_contents("php://input"), true);
 
-        if (
-            isset($formData['enterprise']) &&
-            isset($formData['title']) &&
-            isset($formData['source']) &&
-            isset($formData['recruiter'])
-        ) {
-            $enterprise = $formData['enterprise'];
-            $title = $formData['title'];
-            $source = $formData['source'];
-            $recruiter = $formData['recruiter'];
-            $note = $formData['note'] ?? '';
+    header('Content-Type: application/json');
+    echo json_encode($response);
+}
 
-            $sql = "INSERT INTO jobs (enterprise, title, source, recruiter, note, status) 
-                    VALUES ('$enterprise', '$title', '$source', '$recruiter', '$note', 'pending')";
+function createJob0() {
+    $pdo = getConnexion();
+    if (!empty($_POST)) {
+        $errors = [];
+        echo $_POST['title'];
+        
 
-            if ($conn->query($sql) === TRUE) {
+        if (empty($_POST['enterprise'])) {
+            $errors['enterprise'] = "Name not valid";
+        }
+
+        if (empty($_POST['title'])) {
+            $errors['title'] = 'Title not valid';
+        }
+        
+        if (empty($_POST['source'])) {
+            $errors['source'] = 'Source not valid';
+        }
+
+        if (empty($_POST['recruiter'])) {
+            $errors['recruiter'] = 'Recruiter not valid';
+        }
+
+        if (empty($errors)) {
+            $enterprise = verifyInput($_POST['enterprise']);
+            $title = verifyInput($_POST['title']);
+            $source = verifyInput($_POST['source']);
+            $recruiter = verifyInput($_POST['recruiter']);
+            $note = verifyInput($_POST['note']);
+
+            $sql = $pdo->prepare("INSERT INTO jobs (`date`, enterprise, title, source, recruiter, note, status) 
+            VALUES (NOW(), ?, ?, ?, ?, ?, 'pending')");
+
+               $sql->execute([$enterprise, $title, $source, $recruiter, $note]);
+
+            if ($sql->rowCount() > 0) {
                 $response = [
                     'success' => true,
                     'message' => 'Form data saved successfully'
@@ -61,51 +95,47 @@ switch ($method) {
             } else {
                 $response = [
                     'success' => false,
-                    'message' => 'Error saving form data: ' . $conn->error
+                    'message' => 'Error saving form data'
                 ];
             }
-
-            header('Content-Type: application/json');
-            echo json_encode($response);
+            
         } else {
-            http_response_code(400); // Mauvaise demande
-            echo json_encode(['error' => 'Missing required data']);
+            $response = [
+                'success' => false,
+                'errors' => $errors
+            ];
         }
-        break;
-        case 'PUT':
-            // Endpoint to update item status
-            $urlParts = explode('/', $_SERVER['REQUEST_URI']);
-            $id = $urlParts[2] ?? null;
-            $status = $urlParts[3] ?? '';
-        
-            if ($id !== null && ($status == 'accepted' || $status == 'rejected')) {
-                $sql = "UPDATE jobs SET status = '$status' WHERE id = $id";
-        
-                if ($conn->query($sql) === TRUE) {
-                    $response = [
-                        'success' => true,
-                        'message' => 'Item status updated'
-                    ];
-                } else {
-                    $response = [
-                        'success' => false,
-                        'message' => 'Error updating item status: ' . $conn->error
-                    ];
-                }
-        
-                header('Content-Type: application/json');
-                echo json_encode($response);
-            } else {
-                http_response_code(400); // Bad request
-                echo json_encode(['error' => 'Invalid ID or status parameter']);
-            }
-        break;
-    default:
-        http_response_code(405); // Méthode non autorisée
-        echo json_encode(['error' => 'Method Not Allowed']);
-        break;
+    } else {
+        $response = [
+            'success' => false,
+            'message' => 'Please fill the form'
+        ];
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($response);
 }
 
-// Fermer la connexion à la base de données
-$conn->close();
-?>
+
+
+function getJobs()
+{
+    $pdo = getConnexion();
+    $req = $pdo->prepare("SELECT * FROM
+    jobs
+        ORDER BY id DESC");
+    $req->execute();
+    $datas = $req->fetchAll();
+    $req->closeCursor();
+    sendJSON($datas);
+   //  return $datas;
+}
+
+function updateJob($id, $status)
+{
+    $pdo = getConnexion();
+    $req = $pdo->prepare("UPDATE jobs SET status = ? WHERE id = ?");
+    $req->execute([$status, $id]);?>
+<?php
+}
+
