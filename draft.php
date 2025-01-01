@@ -1,10 +1,15 @@
-
-<?php $title = "Job Application Tracker";
-
-ob_start(); ?>
-
-<main class="main">
-<div class="job-tracker">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="job-tracker">
         <header>
             <h1>Job Application Tracker</h1>
             <div class="header-actions">
@@ -107,9 +112,7 @@ ob_start(); ?>
             </div>
         </div>
     </div>
-</main>
-
-<script>
+    <script>
         document.getElementById('toggleForm').addEventListener('click', function() {
             var form = document.getElementById('jobForm');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -131,7 +134,5 @@ ob_start(); ?>
             searchBar.style.display = 'none';
         });
     </script>
-    
-<?php $content = ob_get_clean(); ?>
-
-<?php require './src/view/layout.php'; ?>
+</body>
+</html>
