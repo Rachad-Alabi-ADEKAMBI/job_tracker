@@ -98,7 +98,7 @@
                         </tr>
                         <tr>
                             <td data-label="Company">TechGiant</td>
-                            <td data-label="Position">Product Manager</td>
+                            <td data-label="Position">Prod Manager</td>
                             <td data-label="Date Applied">2023-05-20</td>
                             <td data-label="Status"><span class="status accepted">Accepted</span></td>
                         </tr>
