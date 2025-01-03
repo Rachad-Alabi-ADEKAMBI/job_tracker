@@ -11,7 +11,7 @@ ob_start(); ?>
                 <button id="searchToggle" class="btn btn-icon" aria-label="Toggle search">
                     <i class="fas fa-search"></i>
                 </button>
-                <button id="toggleForm" class="btn btn-primary">Add New Application</button>
+                <button id="toggleForm"  @click='displayNewJob()' class="btn btn-primary">Add New Application</button>
             </div>
         </header>
         
@@ -72,30 +72,6 @@ ob_start(); ?>
                             <td data-label="Position">Frontend Developer</td>
                             <td data-label="Date Applied">2023-06-01</td>
                             <td data-label="Status"><span class="status applied">Applied</span></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Company">Startup Inc</td>
-                            <td data-label="Position">Full Stack Developer</td>
-                            <td data-label="Date Applied">2023-05-28</td>
-                            <td data-label="Status"><span class="status interviewing">Interviewing</span></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Company">Big Corp</td>
-                            <td data-label="Position">Software Engineer</td>
-                            <td data-label="Date Applied">2023-05-15</td>
-                            <td data-label="Status"><span class="status rejected">Rejected</span></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Company">Innovate LLC</td>
-                            <td data-label="Position">UX Designer</td>
-                            <td data-label="Date Applied">2023-06-05</td>
-                            <td data-label="Status"><span class="status offered">Offered</span></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Company">TechGiant</td>
-                            <td data-label="Position">Product Manager</td>
-                            <td data-label="Date Applied">2023-05-20</td>
-                            <td data-label="Status"><span class="status accepted">Accepted</span></td>
                         </tr>
                     </tbody>
                 </table>
