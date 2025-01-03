@@ -141,6 +141,7 @@ ob_start(); ?>
             return {
                 showAddForm: false,
                 showUpdateForm: false,
+                showJobs: false
                 message: '',
                 role: '',
                 form: {
@@ -154,72 +155,40 @@ ob_start(); ?>
         methods: {
             submitForm(){
                 const formData = new FormData();
+                    formData.append('company', this.form.company);
+                    formData.append('position', this.form.position);
+                    formData.append('date_applied', this.form.date_applied);
+                    formData.append('status', this.form.status);
 
-                    // Ajout des données saisies au FormData
-                    formData.append('email', this.form.email);
-                    formData.append('password', this.form.password);
-
-                    // Debug : Vérifier les données avant l'envoi
                     console.log('Données envoyées :', Object.fromEntries(formData));
 
-                    // Envoi de la requête avec Axios
-                    axios.post('api/script.php?action=login', formData)
+                    axios.post('inddex.php?action=addNewJob', formData)
                         .then(response => {
-                             // Redirection selon le rôle
-                             console.log(response.data.role);
-                             this.role=(response.data.role);
-
-                             const role= response.data.role;
-
-                             if(role === 'user'){
-                                window.location.replace('index.php?action=dashboardPage');
-                             } else if(role === 'admin' ){
-                                window.location.replace('index.php?action=dashboardAdminPage');
-                             } else{
-                                this.message = 'Identifiants incorrects';
-                             }
+                            // console.log(response.data.role);  
+                            console.log('job added !')
                         })
                         .catch(error => {
                             console.error('Erreur Axios :', error);
                             this.message = 'Erreur lors de la connexion.';
                         });
             },
-            togglePasswordVisibility() {
-                this.showPassword = !this.showPassword;
+            displayNewJobForm(){
+                this.showJobs = false;
+                this.showNewJob = true;
+                this.showUpdateJob = false;
             },
-            loginWithGoogle(){
-        alert('Api indisponible pour le moment, merci de reéssayer ultérieurement !');
-    },
-    loginWithFacebook(){
-        alert('Api indisponible pour le moment, merci de reéssayer ultérieurement !');
-    },
-            handleGoogleCredentialResponse(response) {
-        console.log('Google ID Token:', response.credential);
-
-        // Envoyer le token Google ID au serveur pour validation
-        const formData = new FormData();
-        formData.append('token', response.credential);
-
-        axios.post('api/script.php?action=google-login', formData)
-            .then(res => {
-                console.log(response.data.role);
-                             this.role=(response.data.role);
-
-                             const role= response.data.role;
-
-                             if(role === 'user'){
-                                window.location.replace('index.php?action=dashboardPage');
-                             } else if(role === 'admin' ){
-                                window.location.replace('index.php?action=dashboardAdminPage');
-                             } else{
-                                this.message = 'Identifiants incorrects';
-                             }
-            })
-            .catch(err => {
-                console.error('Erreur Google Login:', err);
-            });
-    }
-        }
+            displayJobs(){
+                this.showJobs = true;
+                this.showNewJob = false;
+                this.showUpdateJob = false;
+            },
+            displayUpdateJob(){
+                this.showJobs = false;
+                this.showNewJob = false;
+                this.showUpdateJob = true;
+            }
+      
+     }
     }).mount('#app');
 </script>
     
