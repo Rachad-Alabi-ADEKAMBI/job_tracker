@@ -1,9 +1,8 @@
 <?php
-//require_once './src/model/front/home.php';
+require_once 'db.php';
 
-function homePage()
+function getJobs()
 {
-   // $posts = sixAds();
 
-    require './src/view/home.php';
+    return 'ok';
 }

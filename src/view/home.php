@@ -27,7 +27,7 @@ ob_start(); ?>
                 <h2>Add New Job Application</h2>
                 <button id="closeForm" class="btn btn-close" @click='closeNewJobForm()' >&times;</button>
             </div>
-            <form>
+            <form @submit.prevent="newJob">
                 <div class="form-group">
                     <label for="company">Company:</label>
                     <input type="text" id="company" v-model="form.company" required>
@@ -40,16 +40,6 @@ ob_start(); ?>
                     <label for="dateApplied">Date Applied:</label>
                     <input type="date" id="dateApplied" v-model="form.dateApplied" required>
                 </div>
-                <div class="form-group">
-                    <label for="status">Status:</label>
-                    <select id="status" v-model="form.status" required>
-                        <option value="applied">Applied</option>
-                        <option value="interviewing">Interviewing</option>
-                        <option value="offered">Offered</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="accepted">Accepted</option>
-                    </select>
-                </div>
                 <button type="submit" class="btn btn-success">Add Application</button>
             </form>
         </div>
@@ -57,7 +47,7 @@ ob_start(); ?>
         <div id="jobForm" class="job-form"  v-if='showUpdateJobForm'>
             <div class="form-header">
                 <h2>Update Job Application</h2>
-                <button id="closeForm" class="btn btn-close" @click='updateJob()' >&times;</button>
+                <button id="closeForm" class="btn btn-close" @click='closeUpdateJobForm()' >&times;</button>
             </div>
             <form >
                 <div class="form-group">
@@ -127,8 +117,7 @@ ob_start(); ?>
                 form: {
                      company: '',
                     position: '',
-                    date_applied: '',
-                    status: ''
+                    date_applied: ''
                 }
             };
         },
@@ -137,16 +126,15 @@ ob_start(); ?>
         },
         
         methods: {
-            submitForm(){
+            newJob(){
                 const formData = new FormData();
                     formData.append('company', this.form.company);
                     formData.append('position', this.form.position);
                     formData.append('date_applied', this.form.date_applied);
-                    formData.append('status', this.form.status);
 
                     console.log('Données envoyées :', Object.fromEntries(formData));
 
-                    axios.post('inddex.php?action=addNewJob', formData)
+                    axios.post('index.php?action=addNewJob', formData)
                         .then(response => {
                             // console.log(response.data.role);  
                             console.log('job added !')
