@@ -128,6 +128,10 @@ ob_start(); ?>
                 }
             };
         },
+        mounted() {
+            this.displayJobs();
+        },
+        
         methods: {
             submitForm(){
                 const formData = new FormData();
@@ -162,6 +166,12 @@ ob_start(); ?>
                 this.showJobs = false;
                 this.showNewJob = false;
                 this.showUpdateJob = true;
+            }, 
+            displaySearch(){
+                this.showSearchBar = true;
+            },
+            closeSearch(){
+                this.showSearchBar = false;
             }
       
      }
