@@ -8,41 +8,41 @@ ob_start(); ?>
         <header>
             <h1>Job Application Tracker</h1>
             <div class="header-actions">
-                <button id="searchToggle" class="btn btn-icon" aria-label="Toggle search">
+                <button id="searchToggle" class="btn btn-icon" @click='displaySearch()'>
                     <i class="fas fa-search"></i>
                 </button>
-                <button id="toggleForm"  @click='displayNewJob()' class="btn btn-primary">Add New Application</button>
+                <button id="toggleForm"  @click='displayNewJobForm()' class="btn btn-primary">Add New Application</button>
             </div>
         </header>
         
-        <div id="searchBar" class="search-bar" >
-            <input type="text" id="searchInput" placeholder="Search applications...">
-            <button id="closeSearch" class="btn btn-icon" aria-label="Close search">
+        <div id="searchBar" class="search-bar" v-if='showSearchBar' >
+            <input type="text" id="searchInput" placeholder="Search applications..." >
+            <button id="closeSearch" class="btn btn-icon" @click='closeSearch()'>
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <div id="jobForm" class="job-form"  v-if='showNewJob'>
+        <div id="jobForm" class="job-form"  v-if='showNewJobForm'>
             <div class="form-header">
                 <h2>Add New Job Application</h2>
-                <button id="closeForm" class="btn btn-close">&times;</button>
+                <button id="closeForm" class="btn btn-close" @click='closeNewJobForm()' >&times;</button>
             </div>
             <form>
                 <div class="form-group">
                     <label for="company">Company:</label>
-                    <input type="text" id="company" name="company" required>
+                    <input type="text" id="company" v-model="form.company" required>
                 </div>
                 <div class="form-group">
                     <label for="position">Position:</label>
-                    <input type="text" id="position" name="position" required>
+                    <input type="text" id="position" v-mode="form.position" required>
                 </div>
                 <div class="form-group">
                     <label for="dateApplied">Date Applied:</label>
-                    <input type="date" id="dateApplied" name="dateApplied" required>
+                    <input type="date" id="dateApplied" v-model="form.dateApplied" required>
                 </div>
                 <div class="form-group">
                     <label for="status">Status:</label>
-                    <select id="status" name="status" required>
+                    <select id="status" v-model="form.status" required>
                         <option value="applied">Applied</option>
                         <option value="interviewing">Interviewing</option>
                         <option value="offered">Offered</option>
@@ -51,6 +51,26 @@ ob_start(); ?>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-success">Add Application</button>
+            </form>
+        </div>
+
+        <div id="jobForm" class="job-form"  v-if='showUpdateJobForm'>
+            <div class="form-header">
+                <h2>Update Job Application</h2>
+                <button id="closeForm" class="btn btn-close" @click='updateJob()' >&times;</button>
+            </div>
+            <form >
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" v-model="form.status" required>
+                        <option value="applied">Applied</option>
+                        <option value="interviewing">Interviewing</option>
+                        <option value="offered">Offered</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="accepted">Accepted</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Update job</button>
             </form>
         </div>
 
@@ -64,6 +84,9 @@ ob_start(); ?>
                             <th>Position</th>
                             <th>Date Applied</th>
                             <th>Status</th>
+                            <th>
+
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,7 +94,10 @@ ob_start(); ?>
                             <td data-label="Company">Tech Co</td>
                             <td data-label="Position">Frontend Developer</td>
                             <td data-label="Date Applied">2023-06-01</td>
-                            <td data-label="Status"><span class="status applied">Applied</span></td>
+                            <td data-label="Status"><span class="status applied">Applied </span></td> 
+                            <td>
+                            <i class="fas fa-pen" @click='displayUpdateJobForm()'></i>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -91,9 +117,10 @@ ob_start(); ?>
     createApp({
         data() {
             return {
-                showAddForm: false,
-                showUpdateForm: false,
+                showNewJobForm: false,
+                showUpdateJobForm: false,
                 showJobs: false,
+                showSearchBar: false,
                 message: '',
                 role: '',
                 jobs: '',
@@ -131,7 +158,12 @@ ob_start(); ?>
             },
             displayNewJobForm(){
                 this.showJobs = false;
-                this.showNewJob = true;
+                this.showNewJobForm = true;
+                this.showUpdateJob = false;
+            },
+            closeNewJobForm(){
+                this.showJobs = true;
+                this.showNewJobForm = false;
                 this.showUpdateJob = false;
             },
             displayJobs(){
@@ -149,22 +181,29 @@ ob_start(); ?>
                         console.error('Error fetching user data:', error);
                     });
                 this.showJobs = true;
-                this.showNewJob = false;
+                this.showNewJobForm = false;
                 this.showUpdateJob = false;
-                alert('ok');
             },
-            displayUpdateJob(){
+            displayUpdateJobForm(){
                 this.showJobs = false;
-                this.showNewJob = false;
-                this.showUpdateJob = true;
+                this.showNewJobForm = false;
+                this.showUpdateJobForm = true;
+            }, 
+            closeUpdateJobForm(){
+                this.showJobs = true;
+                this.showNewJobForm = false;
+                this.showUpdateJobForm = false;
             }, 
             displaySearch(){
                 this.showSearchBar = true;
+                this.showUpdateJobForm = false;
+                this.showNewJobForm = false;
             },
             closeSearch(){
                 this.showSearchBar = false;
+                this.showUpdateJobForm = false;
+                this.showNewJobForm = false;
             }
-      
      }
     }).mount('#app');
 </script>
