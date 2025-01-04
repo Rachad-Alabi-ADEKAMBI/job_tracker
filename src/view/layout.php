@@ -7,7 +7,7 @@
         <title><?= $title ?></title>
     </head>
     <body>
-        <div class="app">
+        <div class="app" id='app'>
             <div class="main">
                 <?= $content ?>
             </div>

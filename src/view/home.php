@@ -4,7 +4,7 @@
 ob_start(); ?>
 
 <main class="main">
-<div class="job-tracker">
+    <div class="job-tracker">
         <header>
             <h1>Job Application Tracker</h1>
             <div class="header-actions">
@@ -15,14 +15,14 @@ ob_start(); ?>
             </div>
         </header>
         
-        <div id="searchBar" class="search-bar" style="display: none;">
+        <div id="searchBar" class="search-bar" >
             <input type="text" id="searchInput" placeholder="Search applications...">
             <button id="closeSearch" class="btn btn-icon" aria-label="Close search">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <div id="jobForm" class="job-form" style="display: none;">
+        <div id="jobForm" class="job-form"  v-if='showNewJob'>
             <div class="form-header">
                 <h2>Add New Job Application</h2>
                 <button id="closeForm" class="btn btn-close">&times;</button>
@@ -54,7 +54,7 @@ ob_start(); ?>
             </form>
         </div>
 
-        <div class="job-list">
+        <div class="job-list" v-if='showJobs'>
             <h2>Applied Jobs</h2>
             <div class="table-responsive">
                 <table>
@@ -86,30 +86,6 @@ ob_start(); ?>
 </main>
 
 <script>
-        document.getElementById('toggleForm').addEventListener('click', function() {
-            var form = document.getElementById('jobForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        });
-
-        document.getElementById('closeForm').addEventListener('click', function() {
-            var form = document.getElementById('jobForm');
-            form.style.display = 'none';
-        });
-
-        document.getElementById('searchToggle').addEventListener('click', function() {
-            var searchBar = document.getElementById('searchBar');
-            searchBar.style.display = 'flex';
-            document.getElementById('searchInput').focus();
-        });
-
-        document.getElementById('closeSearch').addEventListener('click', function() {
-            var searchBar = document.getElementById('searchBar');
-            searchBar.style.display = 'none';
-        });
-</script>
-
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script>
     const { createApp } = Vue;
 
     createApp({
@@ -117,9 +93,10 @@ ob_start(); ?>
             return {
                 showAddForm: false,
                 showUpdateForm: false,
-                showJobs: false
+                showJobs: false,
                 message: '',
                 role: '',
+                jobs: '',
                 form: {
                      company: '',
                     position: '',
@@ -158,9 +135,23 @@ ob_start(); ?>
                 this.showUpdateJob = false;
             },
             displayJobs(){
+                axios.get('index.php?action=getJobs')
+                    .then((response) => {
+                        if (Array.isArray(response.data) && response.data.length > 0) {
+                            this.jobs = response.data;
+                            console.log(response.data)
+
+                        } else {
+                            console.warn('No data found in API response.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user data:', error);
+                    });
                 this.showJobs = true;
                 this.showNewJob = false;
                 this.showUpdateJob = false;
+                alert('ok');
             },
             displayUpdateJob(){
                 this.showJobs = false;
