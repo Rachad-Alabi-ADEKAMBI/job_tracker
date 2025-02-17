@@ -33,11 +33,11 @@ ob_start(); ?>
                 </div>
                 <div class="form-group">
                     <label for="position">Position:</label>
-                    <input type="text" id="position" v-mode="form.position" required>
+                    <input type="text" id="position" v-model="form.position" required>
                 </div>
                 <div class="form-group">
                     <label for="dateApplied">Date Applied:</label>
-                    <input type="date" id="dateApplied" v-model="form.dateApplied" required>
+                    <input type="date" id="date_applied" v-model="form.date_applied" required>
                 </div>
                 <button type="submit" class="btn btn-success">Add Application</button>
             </form>
@@ -65,6 +65,10 @@ ob_start(); ?>
 
         <div class="job-list" v-if='showJobs'>
             <h2>Applied Jobs</h2>
+
+            <p>
+                {{ message}}
+            </p>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -137,8 +141,13 @@ ob_start(); ?>
 
                 axios.post('index.php?action=addNewJob', formData)
                     .then(response => {
-                        // console.log(response.data.role);  
-                        console.log('job added !')
+                        console.log('Réponse Axios :', response.data);
+                        if (response.data.success) {
+                            this.message = response.data.message;
+                            this.displayJobs();
+                        } else {
+                            this.message = response.data.message;
+                        }
                     })
                     .catch(error => {
                         console.error('Erreur Axios :', error);

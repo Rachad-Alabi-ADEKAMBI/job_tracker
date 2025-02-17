@@ -11,3 +11,8 @@ function displayJobs()
 {
     return getJobs();
 }
+
+function createJob()
+{
+    return addNewJob();
+}

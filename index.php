@@ -20,6 +20,10 @@ if (isset($_GET['action']) && !empty($_GET['action'])) {
             getJobs();
             break;
 
+        case 'addNewJob':
+            addNewJob();
+            break;
+
         default:
             echo '<script>
                 alert("Page introuvable, veuillez vérifier cette URL !");

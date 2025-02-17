@@ -35,51 +35,57 @@ function verifyInput($inputContent)
     return $inputContent;
 }
 
-function createJob0()
+function addNewJob()
 {
     $pdo = getConnexion();
-    if (!empty($_POST)) {
+    if (!$pdo) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database connection failed'
+        ]);
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
         $errors = [];
-        echo $_POST['title'];
 
-
-        if (empty($_POST['enterprise'])) {
-            $errors['enterprise'] = "Name not valid";
+        // Validate inputs
+        if (empty($_POST['company'])) {
+            $errors['company'] = "Company not valid";
         }
 
-        if (empty($_POST['title'])) {
-            $errors['title'] = 'Title not valid';
+        if (empty($_POST['position'])) {
+            $errors['position'] = 'Position not valid';
         }
 
-        if (empty($_POST['source'])) {
-            $errors['source'] = 'Source not valid';
-        }
-
-        if (empty($_POST['recruiter'])) {
-            $errors['recruiter'] = 'Recruiter not valid';
+        if (empty($_POST['date_applied'])) {
+            $errors['date_applied'] = 'Date applied not valid';
         }
 
         if (empty($errors)) {
-            $enterprise = verifyInput($_POST['enterprise']);
-            $title = verifyInput($_POST['title']);
-            $source = verifyInput($_POST['source']);
-            $recruiter = verifyInput($_POST['recruiter']);
-            $note = verifyInput($_POST['note']);
+            $company = verifyInput($_POST['company']);
+            $position = verifyInput($_POST['position']);
+            $date_applied = verifyInput($_POST['date_applied']);
 
-            $sql = $pdo->prepare("INSERT INTO jobs (`date`, enterprise, title, source, recruiter, note, status) 
-            VALUES (NOW(), ?, ?, ?, ?, ?, 'pending')");
+            try {
+                $sql = $pdo->prepare("INSERT INTO jobs (company, position, date_applied, status) VALUES (?, ?, ?, ?)");
+                $sql->execute([$company, $position, $date_applied, 'pending']);
 
-            $sql->execute([$enterprise, $title, $source, $recruiter, $note]);
-
-            if ($sql->rowCount() > 0) {
-                $response = [
-                    'success' => true,
-                    'message' => 'Form data saved successfully'
-                ];
-            } else {
+                if ($sql->rowCount() > 0) {
+                    $response = [
+                        'success' => true,
+                        'message' => 'Job added successfully'
+                    ];
+                } else {
+                    $response = [
+                        'success' => false,
+                        'message' => 'No data inserted'
+                    ];
+                }
+            } catch (PDOException $e) {
                 $response = [
                     'success' => false,
-                    'message' => 'Error saving form data'
+                    'message' => 'Database error: ' . $e->getMessage()
                 ];
             }
         } else {
@@ -91,12 +97,13 @@ function createJob0()
     } else {
         $response = [
             'success' => false,
-            'message' => 'Please fill the form'
+            'message' => 'Invalid request. Please fill the form correctly.'
         ];
     }
 
     header('Content-Type: application/json');
     echo json_encode($response);
+    exit;
 }
 
 function getJobs()
