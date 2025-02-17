@@ -1,4 +1,3 @@
-
 <?php $title = "Job Application Tracker";
 
 ob_start(); ?>
@@ -11,21 +10,21 @@ ob_start(); ?>
                 <button id="searchToggle" class="btn btn-icon" @click='displaySearch()'>
                     <i class="fas fa-search"></i>
                 </button>
-                <button id="toggleForm"  @click='displayNewJobForm()' class="btn btn-primary">Add New Application</button>
+                <button id="toggleForm" @click='displayNewJobForm()' class="btn btn-primary">Add New Application</button>
             </div>
         </header>
-        
-        <div id="searchBar" class="search-bar" v-if='showSearchBar' >
-            <input type="text" id="searchInput" placeholder="Search applications..." >
+
+        <div id="searchBar" class="search-bar" v-if='showSearchBar'>
+            <input type="text" id="searchInput" placeholder="Search applications...">
             <button id="closeSearch" class="btn btn-icon" @click='closeSearch()'>
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <div id="jobForm" class="job-form"  v-if='showNewJobForm'>
+        <div id="jobForm" class="job-form" v-if='showNewJobForm'>
             <div class="form-header">
                 <h2>Add New Job Application</h2>
-                <button id="closeForm" class="btn btn-close" @click='closeNewJobForm()' >&times;</button>
+                <button id="closeForm" class="btn btn-close" @click='closeNewJobForm()'>&times;</button>
             </div>
             <form @submit.prevent="newJob">
                 <div class="form-group">
@@ -44,12 +43,12 @@ ob_start(); ?>
             </form>
         </div>
 
-        <div id="jobForm" class="job-form"  v-if='showUpdateJobForm'>
+        <div id="jobForm" class="job-form" v-if='showUpdateJobForm'>
             <div class="form-header">
                 <h2>Update Job Application</h2>
-                <button id="closeForm" class="btn btn-close" @click='closeUpdateJobForm()' >&times;</button>
+                <button id="closeForm" class="btn btn-close" @click='closeUpdateJobForm()'>&times;</button>
             </div>
-            <form >
+            <form>
                 <div class="form-group">
                     <label for="status">Status:</label>
                     <select id="status" v-model="form.status" required>
@@ -80,13 +79,13 @@ ob_start(); ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td data-label="Company">Tech Co</td>
-                            <td data-label="Position">Frontend Developer</td>
-                            <td data-label="Date Applied">2023-06-01</td>
-                            <td data-label="Status"><span class="status applied">Applied </span></td> 
+                        <tr v-for="job in jobs" :key="job.id">
+                            <td data-label="Company">{{ job.company}}</td>
+                            <td data-label="Position">{{ job.position}}</td>
+                            <td data-label="Date Applied">{{job.date_applied}}</td>
+                            <td data-label="Status"><span class="status applied">{{ job.status}}</span></td>
                             <td>
-                            <i class="fas fa-pen" @click='displayUpdateJobForm()'></i>
+                                <i class="fas fa-pen" @click='displayUpdateJobForm()'></i>
                             </td>
                         </tr>
                     </tbody>
@@ -102,7 +101,9 @@ ob_start(); ?>
 </main>
 
 <script>
-    const { createApp } = Vue;
+    const {
+        createApp
+    } = Vue;
 
     createApp({
         data() {
@@ -115,7 +116,7 @@ ob_start(); ?>
                 role: '',
                 jobs: '',
                 form: {
-                     company: '',
+                    company: '',
                     position: '',
                     date_applied: ''
                 }
@@ -124,37 +125,37 @@ ob_start(); ?>
         mounted() {
             this.displayJobs();
         },
-        
+
         methods: {
-            newJob(){
+            newJob() {
                 const formData = new FormData();
-                    formData.append('company', this.form.company);
-                    formData.append('position', this.form.position);
-                    formData.append('date_applied', this.form.date_applied);
+                formData.append('company', this.form.company);
+                formData.append('position', this.form.position);
+                formData.append('date_applied', this.form.date_applied);
 
-                    console.log('Données envoyées :', Object.fromEntries(formData));
+                console.log('Données envoyées :', Object.fromEntries(formData));
 
-                    axios.post('index.php?action=addNewJob', formData)
-                        .then(response => {
-                            // console.log(response.data.role);  
-                            console.log('job added !')
-                        })
-                        .catch(error => {
-                            console.error('Erreur Axios :', error);
-                            this.message = 'Erreur lors de la connexion.';
-                        });
+                axios.post('index.php?action=addNewJob', formData)
+                    .then(response => {
+                        // console.log(response.data.role);  
+                        console.log('job added !')
+                    })
+                    .catch(error => {
+                        console.error('Erreur Axios :', error);
+                        this.message = 'Erreur lors de la connexion.';
+                    });
             },
-            displayNewJobForm(){
+            displayNewJobForm() {
                 this.showJobs = false;
                 this.showNewJobForm = true;
                 this.showUpdateJob = false;
             },
-            closeNewJobForm(){
+            closeNewJobForm() {
                 this.showJobs = true;
                 this.showNewJobForm = false;
                 this.showUpdateJob = false;
             },
-            displayJobs(){
+            displayJobs() {
                 axios.get('index.php?action=getJobs')
                     .then((response) => {
                         if (Array.isArray(response.data) && response.data.length > 0) {
@@ -172,30 +173,30 @@ ob_start(); ?>
                 this.showNewJobForm = false;
                 this.showUpdateJob = false;
             },
-            displayUpdateJobForm(){
+            displayUpdateJobForm() {
                 this.showJobs = false;
                 this.showNewJobForm = false;
                 this.showUpdateJobForm = true;
-            }, 
-            closeUpdateJobForm(){
+            },
+            closeUpdateJobForm() {
                 this.showJobs = true;
                 this.showNewJobForm = false;
                 this.showUpdateJobForm = false;
-            }, 
-            displaySearch(){
+            },
+            displaySearch() {
                 this.showSearchBar = true;
                 this.showUpdateJobForm = false;
                 this.showNewJobForm = false;
             },
-            closeSearch(){
+            closeSearch() {
                 this.showSearchBar = false;
                 this.showUpdateJobForm = false;
                 this.showNewJobForm = false;
             }
-     }
+        }
     }).mount('#app');
 </script>
-    
+
 <?php $content = ob_get_clean(); ?>
 
 <?php require './src/view/layout.php'; ?>

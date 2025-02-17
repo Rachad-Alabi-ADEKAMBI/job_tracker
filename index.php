@@ -12,9 +12,13 @@ require_once 'src/controller/home.php';
 
 if (isset($_GET['action']) && !empty($_GET['action'])) {
     switch ($_GET['action']) {
-        case 'homeage':
+        case 'homepage':
             homePage();
-            break;      
+            break;
+
+        case 'getJobs':
+            getJobs();
+            break;
 
         default:
             echo '<script>
@@ -27,4 +31,3 @@ if (isset($_GET['action']) && !empty($_GET['action'])) {
     // Page d'accueil par défaut
     homePage();
 }
-?>

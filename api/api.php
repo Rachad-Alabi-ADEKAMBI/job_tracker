@@ -35,29 +35,14 @@ function verifyInput($inputContent)
     return $inputContent;
 }
 
-function createJob() {
-    $pdo = getConnexion();
-    $errors = [];
-    if (!empty($_POST)) {
-           $msg = 'done';
-           return $msg;
-        } else {
-            $response = [
-                'success' => false,
-                'errors' => $errors
-            ];
-        }
 
-    header('Content-Type: application/json');
-    echo json_encode($response);
-}
-
-function createJob0() {
+function createJob0()
+{
     $pdo = getConnexion();
     if (!empty($_POST)) {
         $errors = [];
         echo $_POST['title'];
-        
+
 
         if (empty($_POST['enterprise'])) {
             $errors['enterprise'] = "Name not valid";
@@ -66,7 +51,7 @@ function createJob0() {
         if (empty($_POST['title'])) {
             $errors['title'] = 'Title not valid';
         }
-        
+
         if (empty($_POST['source'])) {
             $errors['source'] = 'Source not valid';
         }
@@ -85,7 +70,7 @@ function createJob0() {
             $sql = $pdo->prepare("INSERT INTO jobs (`date`, enterprise, title, source, recruiter, note, status) 
             VALUES (NOW(), ?, ?, ?, ?, ?, 'pending')");
 
-               $sql->execute([$enterprise, $title, $source, $recruiter, $note]);
+            $sql->execute([$enterprise, $title, $source, $recruiter, $note]);
 
             if ($sql->rowCount() > 0) {
                 $response = [
@@ -98,7 +83,6 @@ function createJob0() {
                     'message' => 'Error saving form data'
                 ];
             }
-            
         } else {
             $response = [
                 'success' => false,
@@ -116,8 +100,6 @@ function createJob0() {
     echo json_encode($response);
 }
 
-
-
 function getJobs()
 {
     $pdo = getConnexion();
@@ -128,14 +110,13 @@ function getJobs()
     $datas = $req->fetchAll();
     $req->closeCursor();
     sendJSON($datas);
-   //  return $datas;
+    //  return $datas;
 }
 
 function updateJob($id, $status)
 {
     $pdo = getConnexion();
     $req = $pdo->prepare("UPDATE jobs SET status = ? WHERE id = ?");
-    $req->execute([$status, $id]);?>
+    $req->execute([$status, $id]); ?>
 <?php
 }
-
