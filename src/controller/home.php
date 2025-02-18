@@ -16,3 +16,8 @@ function createJob()
 {
     return addNewJob();
 }
+
+function updateStatus()
+{
+    return updateJobStatus();
+}

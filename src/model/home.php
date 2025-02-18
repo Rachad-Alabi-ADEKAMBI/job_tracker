@@ -69,7 +69,7 @@ function addNewJob()
 
             try {
                 $sql = $pdo->prepare("INSERT INTO jobs (company, position, date_applied, status) VALUES (?, ?, ?, ?)");
-                $sql->execute([$company, $position, $date_applied, 'pending']);
+                $sql->execute([$company, $position, $date_applied, 'Applied']);
 
                 if ($sql->rowCount() > 0) {
                     $response = [
@@ -119,10 +119,69 @@ function getJobs()
     //  return $datas;
 }
 
-function updateJob($id, $status)
+
+function updateJobStatus()
 {
     $pdo = getConnexion();
-    $req = $pdo->prepare("UPDATE jobs SET status = ? WHERE id = ?");
-    $req->execute([$status, $id]); ?>
-<?php
+    if (!$pdo) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database connection failed'
+        ]);
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+        $errors = [];
+
+        // Validate inputs
+        if (empty($_POST['status'])) {
+            $errors['status'] = "Status not valid";
+        }
+
+        if (empty($_POST['company_id'])) {
+            $errors['company_id'] = "Company ID not valid";
+        }
+
+        if (empty($errors)) {
+            $status = verifyInput($_POST['status']);
+            $company_id = verifyInput($_POST['company_id']);
+
+            try {
+                $sql = $pdo->prepare("UPDATE jobs SET status = ? WHERE id = ?");
+                $sql->execute([$status, $company_id]);
+
+                if ($sql->rowCount() > 0) {
+                    $response = [
+                        'success' => true,
+                        'message' => 'Job updated successfully'
+                    ];
+                } else {
+                    $response = [
+                        'success' => false,
+                        'message' => 'No data inserted'
+                    ];
+                }
+            } catch (PDOException $e) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Database error: ' . $e->getMessage()
+                ];
+            }
+        } else {
+            $response = [
+                'success' => false,
+                'errors' => $errors
+            ];
+        }
+    } else {
+        $response = [
+            'success' => false,
+            'message' => 'Invalid request. Please fill the form correctly.'
+        ];
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
 }

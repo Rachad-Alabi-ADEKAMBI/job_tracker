@@ -24,9 +24,13 @@ if (isset($_GET['action']) && !empty($_GET['action'])) {
             addNewJob();
             break;
 
+        case 'updateStatus':
+            updateStatus();
+            break;
+
         default:
             echo '<script>
-                alert("Page introuvable, veuillez vérifier cette URL !");
+                alert("Function not found ");
                 window.history.back();
             </script>';
             exit();

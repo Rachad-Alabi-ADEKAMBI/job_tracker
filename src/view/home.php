@@ -48,7 +48,20 @@ ob_start(); ?>
                 <h2>Update Job Application</h2>
                 <button id="closeForm" class="btn btn-close" @click='closeUpdateJobForm()'>&times;</button>
             </div>
-            <form>
+
+            <p v-if="successMessage" class="alert alert-success">
+                {{ successMessage}}
+            </p>
+
+            <p v-if="errorMessage" class="alert alert">
+                {{ errorMessage}}
+            </p>
+            <form @submit.prevent="updateJob" v-for="detail in details" :key="detail.id">
+                <div class="form-group">
+                    <h2>
+                        {{ detail.position }} at {{ detail.company }}
+                    </h2>
+                </div>
                 <div class="form-group">
                     <label for="status">Status:</label>
                     <select id="status" v-model="form.status" required>
@@ -59,6 +72,8 @@ ob_start(); ?>
                         <option value="accepted">Accepted</option>
                     </select>
                 </div>
+
+                <input type="submit" id="company_id" v-model="form.company_id" hidden>
                 <button type="submit" class="btn btn-success">Update job</button>
             </form>
         </div>
@@ -66,9 +81,15 @@ ob_start(); ?>
         <div class="job-list" v-if='showJobs'>
             <h2>Applied Jobs</h2>
 
-            <p>
-                {{ message}}
+            <p v-if="successMessage" class="alert alert-success">
+                {{ successMessage}}
             </p>
+
+            <p v-if="errorMessage" class="alert alert">
+                {{ errorMessage}}
+            </p>
+
+
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -89,7 +110,9 @@ ob_start(); ?>
                             <td data-label="Date Applied">{{job.date_applied}}</td>
                             <td data-label="Status"><span class="status applied">{{ job.status}}</span></td>
                             <td>
-                                <i class="fas fa-pen" @click='displayUpdateJobForm()'></i>
+                            <td>
+                                <i class="fas fa-pen" @click="displayUpdateJobForm(job)"></i>
+                            </td>
                             </td>
                         </tr>
                     </tbody>
@@ -117,12 +140,17 @@ ob_start(); ?>
                 showJobs: false,
                 showSearchBar: false,
                 message: '',
+                successMessage: '',
+                errorMessage: '',
                 role: '',
                 jobs: '',
+                details: '',
                 form: {
-                    company: '',
-                    position: '',
-                    date_applied: ''
+                    id: null,
+                    company: "",
+                    position: "",
+                    status: "",
+                    company_id: "",
                 }
             };
         },
@@ -150,9 +178,27 @@ ob_start(); ?>
                         }
                     })
                     .catch(error => {
-                        console.error('Erreur Axios :', error);
-                        this.message = 'Erreur lors de la connexion.';
+                        console.error('Axios error :', error);
+                        this.message = 'Error while submitting the form.';
                     });
+            },
+            updateJob() {
+                // Example: Simulating API update
+                const index = this.jobs.findIndex((job) => job.id === this.form.id);
+                if (index !== -1) {
+                    this.jobs[index] = {
+                        ...this.form
+                    };
+                    this.successMessage = "Job updated successfully!";
+                } else {
+                    this.errorMessage = "Error updating job.";
+                }
+
+                setTimeout(() => {
+                    this.successMessage = "";
+                    this.errorMessage = "";
+                    this.showUpdateJobForm = false;
+                }, 2000);
             },
             displayNewJobForm() {
                 this.showJobs = false;
