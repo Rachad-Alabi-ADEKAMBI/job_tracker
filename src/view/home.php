@@ -15,8 +15,8 @@ ob_start(); ?>
         </header>
 
         <div id="searchBar" class="search-bar" v-if='showSearchBar'>
-            <input type="text" id="searchInput" placeholder="Search applications...">
-            <button id="closeSearch" class="btn btn-icon" @click='closeSearch()'>
+            <input type="text" id="searchInput" v-model="searchQuery" placeholder="Search applications...">
+            <button id="closeSearch" class="btn btn-icon" @click='displayJobs()'>
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -62,7 +62,6 @@ ob_start(); ?>
                 <div class="form-group">
                     <label for="status">Status:</label>
                     <select id="status" v-model="form.status" required>
-                        <option value="applied">Applied</option>
                         <option value="interviewing">Interviewing</option>
                         <option value="offered">Offered</option>
                         <option value="rejected">Rejected</option>
@@ -76,7 +75,10 @@ ob_start(); ?>
         </div>
 
         <div class="job-list" v-if='showJobs'>
-            <h2>Applied Jobs</h2>
+
+            <h2 v-if="showJobsTitle">All Aplications <span>({{this.jobs.length}})</span></h2>
+            <h2 v-if="showResultsTitle">Results <span>({{this.filteredJobs.length}})</h2>
+
 
             <p v-if="successMessage" class="alert alert-success">
                 {{ successMessage}}
@@ -87,7 +89,7 @@ ob_start(); ?>
             </p>
 
 
-            <div class="table-responsive">
+            <div class="table-responsive" v-if="filteredJobs.length > 0">
                 <table>
                     <thead>
                         <tr>
@@ -99,7 +101,7 @@ ob_start(); ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="job in jobs" :key="job.id">
+                        <tr v-for="job in paginatedJobs" :key="job.id">
                             <td data-label="Company">{{ job.company }}</td>
                             <td data-label="Position">{{ job.position }}</td>
                             <td data-label="Date Applied">{{ job.date_applied }}</td>
@@ -115,11 +117,29 @@ ob_start(); ?>
                     </tbody>
                 </table>
             </div>
-            <div class="pagination">
-                <button class="btn btn-secondary">Previous</button>
-                <span>Page 1 of 3</span>
-                <button class="btn btn-secondary">Next</button>
+
+            <p v-if="filteredJobs.length == 0">No applications found.</p>
+
+            <div class="pagination mx-auto" v-if="filteredJobs.length > 0">
+                <button class="btn btn-secondary" @click="prevPage" :disabled="currentPage === 1">
+                    Previous
+                </button>
+
+                <span>Page:</span>
+                <button
+                    v-for="page in totalPages"
+                    :key="page"
+                    @click="goToPage(page)"
+                    :class="['page-button', { active: currentPage === page }]">
+                    {{ page }}
+                </button>
+
+                <button class="btn btn-secondary" @click="nextPage" :disabled="currentPage >= totalPages">
+                    Next
+                </button>
             </div>
+
+
         </div>
     </div>
 </main>
@@ -135,14 +155,20 @@ ob_start(); ?>
                 showNewJobForm: false,
                 showUpdateJobForm: false,
                 showJobs: false,
+                showJobsTitle: false,
+                showResultsTitle: false,
                 showSearchBar: false,
                 message: '',
                 successMessage: '',
                 errorMessage: '',
+                searchQuery: "",
                 role: '',
-                jobs: '',
-
-                details: '',
+                jobs: [],
+                currentPage: 1,
+                pageSize: 5,
+                selectedPage: 1,
+                details: [],
+                roles: [],
                 form: {
                     id: null,
                     company: "",
@@ -153,6 +179,33 @@ ob_start(); ?>
         },
         mounted() {
             this.displayJobs();
+        },
+        computed: {
+            filteredJobs() {
+                if (!this.searchQuery) {
+                    return this.jobs; // Show all jobs if no search query
+                    this.showJobsTitle = true;
+                    this.showResultsTitle = false;
+                }
+                const query = this.searchQuery.toLowerCase();
+
+                this.showJobsTitle = false;
+                this.showResultsTitle = true;
+
+                return this.jobs.filter(job =>
+                    job.company.toLowerCase().includes(query) ||
+                    job.position.toLowerCase().includes(query) ||
+                    job.status.toLowerCase().includes(query)
+                );
+            },
+            totalPages() {
+                return Math.ceil(this.filteredJobs.length / this.pageSize);
+            },
+            paginatedJobs() {
+                let start = (this.currentPage - 1) * this.pageSize;
+                let end = start + this.pageSize;
+                return this.filteredJobs.slice(start, end);
+            }
         },
 
         methods: {
@@ -209,7 +262,8 @@ ob_start(); ?>
             displayNewJobForm() {
                 this.showJobs = false;
                 this.showNewJobForm = true;
-                this.showUpdateJob = false;
+                this.showUpdateJobForm = false;
+                this.showSearchBar = false;
             },
             closeNewJobForm() {
                 this.showJobs = true;
@@ -225,7 +279,8 @@ ob_start(); ?>
                     .then((response) => {
                         if (Array.isArray(response.data) && response.data.length > 0) {
                             this.jobs = response.data;
-                            console.log(response.data)
+                            this.roles = [...new Set(response.data.map(job => job.role))];
+                            console.log(roles);
 
                         } else {
                             console.warn('No data found in API response.');
@@ -237,6 +292,10 @@ ob_start(); ?>
                 this.showJobs = true;
                 this.showNewJobForm = false;
                 this.showUpdateJobForm = false;
+                this.showResultsTitle = false;
+                this.showSearchBar = false;
+                this.showJobsTitle = true;
+                this.searchQuery = '';
             },
             displayUpdateJobForm(jobId) {
                 this.showJobs = false;
@@ -252,10 +311,20 @@ ob_start(); ?>
                 this.showUpdateJobForm = false;
                 this.showNewJobForm = false;
             },
-            closeSearch() {
-                this.showSearchBar = false;
-                this.showUpdateJobForm = false;
-                this.showNewJobForm = false;
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                }
+            },
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                }
+            },
+            goToPage(page) {
+                if (page >= 1 && page <= this.totalPages) {
+                    this.currentPage = page;
+                }
             }
         }
     }).mount('#app');

@@ -296,14 +296,102 @@ body {
 
 .pagination {
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-top: 30px;
-  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px;
+  background-color: $primary-color;
+  border-radius: 8px;
+  margin: auto;
+  max-width: 100%;
 
-  span {
-    font-size: 16px;
+  .page-button {
+    padding: 4px 8px; // Smaller size
+    border: none;
+    background-color: $secondary-color;
     color: $text-color;
+    font-size: 12px; // Smaller text
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+
+    &:hover {
+      background-color: lighten($accent-color, 10%);
+      transform: scale(1.05);
+    }
+
+    &.active {
+      background-color: $accent-color;
+      color: $background-color;
+      box-shadow: 0px 0px 8px rgba($accent-color, 0.5);
+    }
+
+    &:disabled {
+      background-color: darken($secondary-color, 10%);
+      color: darken($text-color, 30%);
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-secondary {
+    padding: 6px 12px;
+    background-color: $secondary-color;
+    color: $text-color;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background-color: lighten($secondary-color, 10%);
+    }
+
+    &:disabled {
+      background-color: darken($secondary-color, 10%);
+      color: darken($text-color, 30%);
+      cursor: not-allowed;
+    }
+  }
+
+  .page-input {
+    width: 40px; // Smaller input field
+    padding: 4px;
+    border: 1px solid $accent-color;
+    background-color: $secondary-color;
+    color: $text-color;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    outline: none;
+    font-size: 12px;
+
+    &:focus {
+      border-color: lighten($accent-color, 20%);
+      box-shadow: 0px 0px 5px rgba($accent-color, 0.5);
+    }
+  }
+
+  // Responsive Styles
+  @media (max-width: 768px) {
+    gap: 4px;
+
+    .page-button {
+      padding: 3px 6px; // Even smaller for mobile
+      font-size: 10px;
+    }
+
+    .btn-secondary {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .page-input {
+      width: 35px;
+      padding: 3px;
+      font-size: 10px;
+    }
   }
 }
 
