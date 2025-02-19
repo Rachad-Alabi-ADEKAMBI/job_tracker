@@ -46,14 +46,10 @@ ob_start(); ?>
         <div id="jobForm" class="job-form" v-if='showUpdateJobForm'>
             <div class="form-header">
                 <h2>Update Job Application</h2>
-                <button id="closeForm" class="btn btn-close" @click='closeUpdateJobForm()'>&times;</button>
+                <button id="closeForm" class="btn btn-close" @click='displayJobs()'>&times;</button>
             </div>
 
-            <p v-if="successMessage" class="text text-success">
-                {{ successMessage}}
-            </p>
-
-            <p v-if="errorMessage" class="text tex-danger">
+            <p v-if="errorMessage" class="text text-danger">
                 {{ errorMessage}}
             </p>
 
@@ -197,10 +193,7 @@ ob_start(); ?>
                         if (response.data.success) {
                             this.errorMessage = "";
                             this.successMessage = response.data.message;
-                            setTimeout(() => {
-                                this.showUpdateJobForm === false;
-                                this.displayJobs();
-                            }, 2000);
+                            this.displayJobs();
 
                         } else {
                             this.errorMessage = response.data.message;
@@ -224,6 +217,10 @@ ob_start(); ?>
                 this.showUpdateJob = false;
             },
             displayJobs() {
+                setTimeout(() => {
+                    this.successMessage = '';
+                }, 2000);
+
                 axios.get('index.php?action=getJobs')
                     .then((response) => {
                         if (Array.isArray(response.data) && response.data.length > 0) {
@@ -239,7 +236,7 @@ ob_start(); ?>
                     });
                 this.showJobs = true;
                 this.showNewJobForm = false;
-                this.showUpdateJob = false;
+                this.showUpdateJobForm = false;
             },
             displayUpdateJobForm(jobId) {
                 this.showJobs = false;
@@ -249,11 +246,6 @@ ob_start(); ?>
                 this.form = {
                     ...this.details[0]
                 };
-            },
-            closeUpdateJobForm() {
-                this.showJobs = true;
-                this.showNewJobForm = false;
-                this.showUpdateJobForm = false;
             },
             displaySearch() {
                 this.showSearchBar = true;
