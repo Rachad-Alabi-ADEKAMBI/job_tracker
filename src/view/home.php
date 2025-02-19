@@ -49,33 +49,34 @@ ob_start(); ?>
                 <button id="closeForm" class="btn btn-close" @click='closeUpdateJobForm()'>&times;</button>
             </div>
 
-            <p v-if="successMessage" class="alert alert-success">
+            <p v-if="successMessage" class="text text-success">
                 {{ successMessage}}
             </p>
 
-            <p v-if="errorMessage" class="alert alert">
+            <p v-if="errorMessage" class="text tex-danger">
                 {{ errorMessage}}
             </p>
-           
-<form @submit.prevent="updateJob" v-for="detail in details" :key="detail.id">
-    <div class="form-group">
-        <h2>
-            {{ detail.position }} at {{ detail.company }}
-        </h2>
-    </div>
-    <div class="form-group">
-        <label for="status">Status:</label>
-        <select id="status" v-model="form.status" required>
-            <option value="applied">Applied</option>
-            <option value="interviewing">Interviewing</option>
-            <option value="offered">Offered</option>
-            <option value="rejected">Rejected</option>
-            <option value="accepted">Accepted</option>
-        </select>
-    </div>
-    <input type="hidden" id="company_id" v-model="form.company_id">
-    <button type="submit" class="btn btn-success">Update job</button>
-</form>
+
+            <form @submit.prevent="updateJob">
+                <div class="form-group">
+                    <h2>
+                        {{ form.position }} at {{ form.company }}
+                    </h2>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" v-model="form.status" required>
+                        <option value="applied">Applied</option>
+                        <option value="interviewing">Interviewing</option>
+                        <option value="offered">Offered</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="accepted">Accepted</option>
+                    </select>
+                </div>
+                <input type="hidden" id="job_id" v-model="form.id" value="form.id">
+                <button type="submit" class="btn btn-success">Update job</button>
+            </form>
+
         </div>
 
         <div class="job-list" v-if='showJobs'>
@@ -91,29 +92,33 @@ ob_start(); ?>
 
 
             <div class="table-responsive">
-    <table>
-        <thead>
-            <tr>
-                <th>Company</th>
-                <th>Position</th>
-                <th>Date Applied</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="job in jobs" :key="job.id">
-                <td data-label="Company">{{ job.company }}</td>
-                <td data-label="Position">{{ job.position }}</td>
-                <td data-label="Date Applied">{{ job.date_applied }}</td>
-                <td data-label="Status"><span class="status applied">{{ job.status }}</span></td>
-                <td>
-                    <i class="fas fa-pen" @click="displayUpdateJobForm(job.id)"></i>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Position</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="job in jobs" :key="job.id">
+                            <td data-label="Company">{{ job.company }}</td>
+                            <td data-label="Position">{{ job.position }}</td>
+                            <td data-label="Date Applied">{{ job.date_applied }}</td>
+                            <td data-label="Status">
+                                <span :class="`status ${job.status}`">{{ job.status }}</span>
+                            </td>
+
+
+                            <td>
+                                <i class="fas fa-pen" @click="displayUpdateJobForm(job.id)"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="pagination">
                 <button class="btn btn-secondary">Previous</button>
                 <span>Page 1 of 3</span>
@@ -147,7 +152,6 @@ ob_start(); ?>
                     company: "",
                     position: "",
                     status: "",
-                    company_id: "",
                 }
             };
         },
@@ -181,21 +185,33 @@ ob_start(); ?>
             },
             updateJob() {
                 // Example: Simulating API update
-                const index = this.jobs.findIndex((job) => job.id === this.form.id);
-                if (index !== -1) {
-                    this.jobs[index] = {
-                        ...this.form
-                    };
-                    this.successMessage = "Job updated successfully!";
-                } else {
-                    this.errorMessage = "Error updating job.";
-                }
+                const formData = new FormData();
+                formData.append('status', this.form.status);
+                formData.append('job_id', this.form.id);
 
-                setTimeout(() => {
-                    this.successMessage = "";
-                    this.errorMessage = "";
-                    this.showUpdateJobForm = false;
-                }, 2000);
+                console.log('Données envoyées :', Object.fromEntries(formData));
+
+                axios.post('index.php?action=updateStatus', formData)
+                    .then(response => {
+                        console.log('Réponse Axios :', response.data);
+                        if (response.data.success) {
+                            this.errorMessage = "";
+                            this.successMessage = response.data.message;
+                            setTimeout(() => {
+                                this.showUpdateJobForm === false;
+                                this.displayJobs();
+                            }, 2000);
+
+                        } else {
+                            this.errorMessage = response.data.message;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Axios error :', error);
+                        this.errorMessage = 'Error while submitting the form.';
+                    });
+
+
             },
             displayNewJobForm() {
                 this.showJobs = false;
@@ -226,11 +242,14 @@ ob_start(); ?>
                 this.showUpdateJob = false;
             },
             displayUpdateJobForm(jobId) {
-    this.showJobs = false;
-    this.showNewJobForm = false;
-    this.showUpdateJobForm = true;
-    this.details = this.jobs.filter(job => job.id === jobId);
-},
+                this.showJobs = false;
+                this.showNewJobForm = false;
+                this.showUpdateJobForm = true;
+                this.details = this.jobs.filter(job => job.id === jobId);
+                this.form = {
+                    ...this.details[0]
+                };
+            },
             closeUpdateJobForm() {
                 this.showJobs = true;
                 this.showNewJobForm = false;

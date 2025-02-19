@@ -139,17 +139,17 @@ function updateJobStatus()
             $errors['status'] = "Status not valid";
         }
 
-        if (empty($_POST['company_id'])) {
-            $errors['company_id'] = "Company ID not valid";
+        if (empty($_POST['job_id'])) {
+            $errors['job_id'] = "job ID not valid";
         }
 
         if (empty($errors)) {
             $status = verifyInput($_POST['status']);
-            $company_id = verifyInput($_POST['company_id']);
+            $job_id = verifyInput($_POST['job_id']);
 
             try {
                 $sql = $pdo->prepare("UPDATE jobs SET status = ? WHERE id = ?");
-                $sql->execute([$status, $company_id]);
+                $sql->execute([$status, $job_id]);
 
                 if ($sql->rowCount() > 0) {
                     $response = [
