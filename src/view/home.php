@@ -33,8 +33,29 @@ ob_start(); ?>
                 </div>
                 <div class="form-group">
                     <label for="position">Position:</label>
-                    <input type="text" id="position" v-model="form.position" required>
+                    <div class="custom-select">
+                        <input type="text" id="position" v-model="form.position"
+                            @focus="showDropdown = true"
+                            @input="filterOptions"
+                            @keydown.down.prevent="navigateOptions(1)"
+                            @keydown.up.prevent="navigateOptions(-1)"
+                            @keydown.enter.prevent="selectOption(filteredPositions[selectedIndex])"
+                            required>
+
+                        <ul v-show="showDropdown" class="dropdown-list">
+                            <li v-for="(position, index) in filteredPositions"
+                                :key="index"
+                                :class="{ 'selected': index === selectedIndex }"
+                                @mousedown="selectOption(position)"
+                                @mouseover="selectedIndex = index">
+                                {{ position }}
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+
+
+
                 <div class="form-group">
                     <label for="dateApplied">Date Applied:</label>
                     <input type="date" id="date_applied" v-model="form.date_applied" required>
@@ -168,7 +189,14 @@ ob_start(); ?>
                 pageSize: 5,
                 selectedPage: 1,
                 details: [],
-                roles: [],
+                positions: [],
+                position: '',
+                filteredPositions: [],
+                form: {
+                    position: ''
+                },
+                showDropdown: false,
+                selectedIndex: -1,
                 form: {
                     id: null,
                     company: "",
@@ -279,9 +307,7 @@ ob_start(); ?>
                     .then((response) => {
                         if (Array.isArray(response.data) && response.data.length > 0) {
                             this.jobs = response.data;
-                            this.roles = [...new Set(response.data.map(job => job.role))];
-                            console.log(roles);
-
+                            this.positions = [...new Set(response.data.map(job => job.position))];
                         } else {
                             console.warn('No data found in API response.');
                         }
@@ -325,11 +351,95 @@ ob_start(); ?>
                 if (page >= 1 && page <= this.totalPages) {
                     this.currentPage = page;
                 }
+            },
+            filterOptions() {
+                if (this.form.position.trim() === "") {
+                    this.filteredPositions = [...this.positions];
+                } else {
+                    this.filteredPositions = this.positions.filter(position =>
+                        position.toLowerCase().includes(this.form.position.toLowerCase())
+                    );
+                }
+                this.showDropdown = true;
+            },
+            selectOption(position) {
+                if (position) {
+                    this.form.position = position;
+                    this.showDropdown = false;
+                }
+            },
+            hideDropdown() {
+                setTimeout(() => {
+                    this.showDropdown = false;
+                    this.selectedIndex = -1;
+                }, 200);
+            },
+            navigateOptions(direction) {
+                if (this.filteredPositions.length > 0) {
+                    this.selectedIndex += direction;
+                    if (this.selectedIndex < 0) {
+                        this.selectedIndex = this.filteredPositions.length - 1;
+                    } else if (this.selectedIndex >= this.filteredPositions.length) {
+                        this.selectedIndex = 0;
+                    }
+                }
             }
         }
     }).mount('#app');
 </script>
 
+<style>
+    .custom-select {
+        position: relative;
+        width: 100%;
+    }
+
+    .custom-select input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #bb86fc;
+        background-color: #2c2c2c;
+        color: #ffffff;
+        border-radius: 5px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #2c2c2c;
+        border: 1px solid #bb86fc;
+        border-top: none;
+        max-height: 180px;
+        overflow-y: auto;
+        border-radius: 0 0 5px 5px;
+        z-index: 1000;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .dropdown-list li {
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+        color: white;
+    }
+
+    .dropdown-list li.selected,
+    .dropdown-list li:hover {
+        background-color: #bb86fc;
+        color: #121212;
+    }
+
+    [v-show="true"] .dropdown-list {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
 <?php $content = ob_get_clean(); ?>
 
 <?php require './src/view/layout.php'; ?>

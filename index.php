@@ -30,7 +30,7 @@ if (isset($_GET['action']) && !empty($_GET['action'])) {
 
         default:
             echo '<script>
-                alert("Function not found ");
+                alert("Function not found, please check the url");
                 window.history.back();
             </script>';
             exit();
