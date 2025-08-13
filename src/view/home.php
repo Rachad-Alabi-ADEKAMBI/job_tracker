@@ -83,7 +83,7 @@ ob_start(); ?>
                 <div class="form-group">
                     <label for="status">Status:</label>
                     <select id="status" v-model="form.status" required>
-                        <option value="interviewing">Interviewing</option>
+                        <option value="interview">Interview</option>
                         <option value="offered">Offered</option>
                         <option value="rejected">Rejected</option>
                         <option value="accepted">Accepted</option>

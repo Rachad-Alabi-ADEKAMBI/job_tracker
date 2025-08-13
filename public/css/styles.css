@@ -229,7 +229,7 @@ body {
   background-color: #03dac6;
   color: #1e1e1e;
 }
-.job-list .status.interviewing {
+.job-list .status.interview {
   background-color: #ffb300;
   color: #1e1e1e;
 }
