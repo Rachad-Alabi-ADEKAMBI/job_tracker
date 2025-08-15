@@ -1,4 +1,4 @@
-# Job Application Tracker
+# Job Tracker
 
 ## About
 
@@ -16,8 +16,8 @@ Job Application Tracker is a simple web app that helps you track your job applic
 ### 1. Clone the Project
 
 ```sh
-git clone https://github.com/rachad-alabi-adekambi/job-application-tracker.git
-cd job-application-tracker
+git clone https://github.com/Rachad-Alabi-ADEKAMBI/job_tracker
+cd job_tracker
 ```
 
 ### 2. Setup the Database
@@ -46,15 +46,15 @@ If you are using XAMPP or LAMP:
 
 - Move the project to htdocs (for XAMPP) or var/www/html (for LAMP)
 - Start Apache and MySQL in XAMPP/LAMP
-- Open your browser and go to: http://localhost/job-application-tracker
+- Open your browser and go to: http://localhost/job_tracker
 
 If you are using XAMPP or LAMP:
 
-    - Move the project to C:\laragon\www\job-application-tracker
+    - Move the project to C:\laragon\www\job_tracker
 
     - Start Laragon and ensure Apache & MySQL are running
 
-    - Open your browser and go to: http://job-application-tracker.test (if Virtual Hosts are enabled)
+    - Open your browser and go to: http://job_tracker.test (if Virtual Hosts are enabled)
 
 ## Technologies Used
 
@@ -66,7 +66,7 @@ If you are using XAMPP or LAMP:
 ## Folder Structure
 
 ```
-job-application-tracker/
+job_tracker/
 ├── src/          # PHP MVC files (Models, Views, Controllers)
 ├── public/       # Public assets (CSS, JS, Index file)
 ├── sql/          # SQL file to create the database
