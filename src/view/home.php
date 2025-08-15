@@ -90,7 +90,7 @@ ob_start(); ?>
                     </select>
                 </div>
                 <input type="hidden" id="job_id" v-model="form.id" value="form.id">
-                <button type="submit" class="btn btn-success">Update job</button>
+                <button type="submit" class="btn btn-success">Update status</button>
             </form>
 
         </div>
